@@ -35,10 +35,10 @@ export class Price {
   @JoinColumn({ name: 'venueId' })
   venue: Venue;
 
-  @Column()
-  userId: string;
+  @Column({ nullable: true })
+  userId: string | null;
 
-  @ManyToOne(() => User)
+  @ManyToOne(() => User, { nullable: true })
   @JoinColumn({ name: 'userId' })
   user: User;
 }

@@ -14,7 +14,7 @@ export class VenuesService {
         private priceRepo: Repository<Price>,
     ) { }
 
-    async create(dto: CreateVenueDto, userId: string) {
+    async create(dto: CreateVenueDto, userId: string | null) {
         // 1. Create Venue
         const venue = this.repo.create({
             name: dto.name,
@@ -35,7 +35,7 @@ export class VenuesService {
             currency: dto.currency || 'AED',
             beverageType: 'beer',
             format: '50cl',
-            userId: userId,
+            userId: userId, // Can be null now
         });
         await this.priceRepo.save(price);
 

@@ -16,10 +16,8 @@ export class VenuesController {
     // @UseGuards(JwtAuthGuard) // Uncomment when auth is ready for this flow
     async create(@Body(new ValidationPipe()) createVenueDto: CreateVenueDto, @Request() req: any) {
         // For MVP without forced auth on Add Bar, we might use a dummy user ID or require auth
-        // Assuming public for now or we use a seed user ID. 
-        // Let's assume we need a user ID. If not auth, we need a strategy.
-        // For Sprint A, let's use a hardcoded system user ID or similar if req.user is missing.
-        const userId = req.user?.userId || '00000000-0000-0000-0000-000000000000'; // Fallback
+        // Update: Allow anonymous (null) userId to avoid FK constraints
+        const userId = req.user?.userId || null;
         return this.venuesService.create(createVenueDto, userId);
     }
 

@@ -12,7 +12,7 @@ export class PricesService {
         private priceRepo: Repository<Price>,
     ) { }
 
-    async create(createPriceDto: CreatePriceDto, userId: string) {
+    async create(createPriceDto: CreatePriceDto, userId: string | null) {
         // A2: Handle amountCents (Beer only MVP logic)
         // If amountCents is provided, use it. If amount is provided, convert.
         let amountCents = createPriceDto.amountCents;
