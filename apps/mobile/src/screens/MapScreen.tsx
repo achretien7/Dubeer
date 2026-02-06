@@ -7,56 +7,81 @@ import { VenueDto } from '@dubeer/shared';
 import { API_URL } from '../config/api';
 import { useAuth } from '../context/AuthContext';
 
-const PARIS_COORDS = {
-    latitude: 48.8566,
-    longitude: 2.3522,
+const DUBAI_COORDS = {
+    latitude: 25.2048,
+    longitude: 55.2708,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
 };
 
+// Start directly with Dubai as default instead of Paris
+const DEFAULT_COORDS = DUBAI_COORDS;
+
 export const MapScreen = ({ navigation }: RootStackScreenProps<'Map'>) => {
     const { token, logout } = useAuth();
-    const [location, setLocation] = useState(PARIS_COORDS);
+    const [location, setLocation] = useState(DEFAULT_COORDS);
     const [venues, setVenues] = useState<VenueDto[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         (async () => {
-            let { status } = await Location.requestForegroundPermissionsAsync();
+            let lat = DEFAULT_COORDS.latitude;
+            let lon = DEFAULT_COORDS.longitude;
+            let permissionGranted = false;
 
-            let lat = PARIS_COORDS.latitude;
-            let lon = PARIS_COORDS.longitude;
+            try {
+                let { status } = await Location.requestForegroundPermissionsAsync();
+                if (status === 'granted') {
+                    let loc = await Location.getCurrentPositionAsync({});
+                    lat = loc.coords.latitude;
+                    lon = loc.coords.longitude;
+                    permissionGranted = true;
 
-            if (status !== 'granted') {
-                Alert.alert('Permission denied', 'Using default location (Paris).');
-            } else {
-                try {
-                    let location = await Location.getCurrentPositionAsync({});
-                    lat = location.coords.latitude;
-                    lon = location.coords.longitude;
                     setLocation({
-                        ...PARIS_COORDS,
+                        ...DEFAULT_COORDS,
                         latitude: lat,
                         longitude: lon,
                     });
-                } catch (e) {
-                    console.error(e);
+                } else {
+                    Alert.alert('Permission denied', 'Using default location (Dubai).');
                 }
+            } catch (e) {
+                console.error('Location error:', e);
             }
 
-            fetchVenues(lat, lon);
+            fetchVenues(lat, lon, permissionGranted);
         })();
     }, []);
 
-    const fetchVenues = async (lat: number, lon: number) => {
+    const fetchVenues = async (lat: number, lon: number, isRealLocation: boolean) => {
         try {
-            const response = await fetch(`${API_URL}/venues/nearby?lat=${lat}&lon=${lon}&radius_m=5000`);
+            // T33: Location Fallback Strategy
+            // 1. Try fetching at requested location
+            let response = await fetch(`${API_URL}/venues/nearby?lat=${lat}&lon=${lon}&radius_m=20000`); // Increased radius default
             if (!response.ok) throw new Error('Network response was not ok');
-            const data = await response.json();
-            setVenues(data);
-            if (data.length === 0) {
-                Alert.alert('No Venues', 'No venues found nearby. Try moving to a different location (e.g. Paris/Dubai).');
+
+            let data = await response.json();
+
+            // 2. Fallback Rule: If real location returns empty, try Dubai
+            if (data.length === 0 && isRealLocation) {
+                console.log('No venues found at real location. Fallback to Dubai.');
+                const fallbackResponse = await fetch(`${API_URL}/venues/nearby?lat=${DUBAI_COORDS.latitude}&lon=${DUBAI_COORDS.longitude}&radius_m=20000`);
+                if (fallbackResponse.ok) {
+                    const fallbackData = await fallbackResponse.json();
+                    if (fallbackData.length > 0) {
+                        data = fallbackData;
+                        // Move map to Dubai so user sees the pins
+                        setLocation(DUBAI_COORDS);
+                        Alert.alert('Demo Mode', 'No venues found nearby. Teleporting you to Dubai!');
+                    } else {
+                        Alert.alert('No Venues', 'No venues found nearby or in Dubai.');
+                    }
+                }
+            } else if (data.length === 0) {
+                Alert.alert('No Venues', 'No venues found in Dubai (Default). check seed.');
             }
+
+            setVenues(data);
         } catch (error) {
             Alert.alert('Network Error', 'Failed to fetch venues. Please check your connection.');
         } finally {
