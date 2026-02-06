@@ -6,6 +6,15 @@ import { Price } from '../prices/entities/price.entity';
 import { Vote } from '../votes/entities/vote.entity';
 
 const isProduction = process.env.NODE_ENV === 'production';
+console.log('[DB ENV]', {
+  NODE_ENV: process.env.NODE_ENV,
+  DATABASE_URL_set: !!process.env.DATABASE_URL,
+  PGHOST: process.env.PGHOST,
+  PGPORT: process.env.PGPORT,
+  PGUSER: process.env.PGUSER,
+  PGDATABASE: process.env.PGDATABASE,
+  POSTGRES_HOST: process.env.POSTGRES_HOST,
+});
 
 const hasDatabaseUrl = !!process.env.DATABASE_URL;
 
