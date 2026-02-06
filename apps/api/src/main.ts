@@ -1,9 +1,21 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 
+import { DataSource } from 'typeorm';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api/v1');
+
+  // Auto-run migrations in production (Railway)
+  try {
+    const dataSource = app.get(DataSource);
+    const migrations = await dataSource.runMigrations();
+    console.log(`Executed ${migrations.length} migrations:`, migrations.map(m => m.name));
+  } catch (err) {
+    console.error('Error running migrations:', err);
+  }
+
   // T28: Dynamic PORT for deployment
   const port = process.env.PORT || 3000;
   // Debug: Log all registered routes
