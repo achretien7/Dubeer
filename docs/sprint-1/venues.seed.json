@@ -1,21 +1,20 @@
 [
-    {
-        "name": "The Golden Lion",
-        "address": "123 High St",
-        "city_area": "Downtown",
-        "latitude": 48.8566,
-        "longitude": 2.3522
-    },
-    {
-        "name": "Le Bar Perdu",
-        "latitude": 48.8600,
-        "longitude": 2.3400
-    },
-    {
-        "name": "Cafe de la Gare",
-        "address": "Place de la Gare",
-        "city_area": "Station District",
-        "latitude": 48.8500,
-        "longitude": 2.3600
-    }
+  {
+    "name": "Marina Tap House",
+    "address": "Dubai Marina, Dubai, UAE",
+    "lat": 25.0776,
+    "lon": 55.1396
+  },
+  {
+    "name": "Downtown Craft Bar",
+    "address": "Downtown Dubai, Dubai, UAE",
+    "lat": 25.1972,
+    "lon": 55.2744
+  },
+  {
+    "name": "JLT Hidden Bar",
+    "address": "Jumeirah Lake Towers, Dubai, UAE",
+    "lat": 25.0692,
+    "lon": 55.1412
+  }
 ]
