@@ -29,7 +29,9 @@ const options: DataSourceOptions = hasDatabaseUrl
   ? {
       type: 'postgres',
       url: process.env.DATABASE_URL,
+      // Railway public proxy often uses cert chains that fail strict validation
       ssl: isProduction ? { rejectUnauthorized: false } : undefined,
+      extra: isProduction ? { ssl: { rejectUnauthorized: false } } : undefined,
       entities: [Venue, User, Price, Vote],
       migrations: ['dist/migrations/*.js'],
       synchronize: false,
@@ -48,6 +50,7 @@ const options: DataSourceOptions = hasDatabaseUrl
       synchronize: false,
       logging: true,
     };
+
 
 export const AppDataSource = new DataSource(options);
 export default AppDataSource;
