@@ -13,16 +13,30 @@ export class PricesService {
     ) { }
 
     async create(createPriceDto: CreatePriceDto, userId: string) {
-  const price = this.priceRepo.create({
-    amount: createPriceDto.amount,
-    currency: 'AED',
-    score: 0,
-    venueId: createPriceDto.venueId,
-    userId: userId,
-  });
+        // A2: Handle amountCents (Beer only MVP logic)
+        // If amountCents is provided, use it. If amount is provided, convert.
+        let amountCents = createPriceDto.amountCents;
+        let amount = createPriceDto.amount;
 
-  return this.priceRepo.save(price);
-}
+        if (amountCents === undefined && amount !== undefined) {
+            amountCents = Math.round(amount * 100);
+        } else if (amount === undefined && amountCents !== undefined) {
+            amount = amountCents / 100;
+        }
+
+        const price = this.priceRepo.create({
+            amount: amount, // Keep sync for safe migration
+            amountCents: amountCents,
+            currency: 'AED', // MVP hardcoded
+            beverageType: 'beer',
+            format: '50cl',
+            score: 0,
+            venueId: createPriceDto.venueId,
+            userId: userId,
+        });
+
+        return this.priceRepo.save(price);
+    }
 
 
 

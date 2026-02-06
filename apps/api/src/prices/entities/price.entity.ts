@@ -7,8 +7,17 @@ export class Price {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('decimal')
+  @Column('decimal', { nullable: true })
   amount: number;
+
+  @Column({ type: 'int', nullable: true })
+  amountCents: number;
+
+  @Column({ default: 'beer' })
+  beverageType: string;
+
+  @Column({ default: '50cl' })
+  format: string;
 
   @Column({ default: 'AED' })
   currency: string;

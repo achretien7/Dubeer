@@ -1,11 +1,14 @@
-import { IsNumber, IsNotEmpty, Min, IsUUID } from 'class-validator';
+import { IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreatePriceDto {
-    @IsNotEmpty()
     @IsUUID()
     venueId: string;
 
+    @IsOptional() // Deprecated
     @IsNumber()
-    @Min(0.01)
-    amount: number;
+    amount?: number;
+
+    @IsOptional()
+    @IsNumber()
+    amountCents?: number;
 }
