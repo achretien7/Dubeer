@@ -21,20 +21,34 @@ async function bootstrap() {
     const seedData = JSON.parse(fs.readFileSync(seedFile, 'utf8'));
 
     for (const item of seedData) {
-        let venue = await venueRepo.findOne({ where: { name: item.name } });
-        if (!venue) {
-            venue = new Venue();
-            venue.name = item.name;
-        }
-        venue.address = item.address;
-        venue.city_area = item.city_area;
-        venue.location = {
-            type: 'Point',
-            coordinates: [item.longitude, item.latitude],
-        };
+        const existingVenue = await venueRepo.findOne({ where: { name: item.name } });
 
-        await venueRepo.save(venue);
-        console.log(`Seeded: ${venue.name}`);
+        if (existingVenue) {
+            await venueRepo
+                .createQueryBuilder()
+                .update(Venue)
+                .set({
+                    address: item.address,
+                    city_area: item.city_area,
+                    location: () => `ST_SetSRID(ST_MakePoint(${item.lon}, ${item.lat}), 4326)::geography`
+                })
+                .where("id = :id", { id: existingVenue.id })
+                .execute();
+            console.log(`Updated: ${item.name}`);
+        } else {
+            await venueRepo
+                .createQueryBuilder()
+                .insert()
+                .into(Venue)
+                .values({
+                    name: item.name,
+                    address: item.address,
+                    city_area: item.city_area,
+                    location: () => `ST_SetSRID(ST_MakePoint(${item.lon}, ${item.lat}), 4326)::geography`
+                })
+                .execute();
+            console.log(`Seeded: ${item.name}`);
+        }
     }
 
     await app.close();
