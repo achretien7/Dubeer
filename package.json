@@ -1,0 +1,11 @@
+{
+  "name": "dubeer-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "seed:venues": "npm run seed:venues -w apps/api"
+  }
+}

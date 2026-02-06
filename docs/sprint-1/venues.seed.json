@@ -1,0 +1,21 @@
+[
+    {
+        "name": "The Golden Lion",
+        "address": "123 High St",
+        "city_area": "Downtown",
+        "latitude": 48.8566,
+        "longitude": 2.3522
+    },
+    {
+        "name": "Le Bar Perdu",
+        "latitude": 48.8600,
+        "longitude": 2.3400
+    },
+    {
+        "name": "Cafe de la Gare",
+        "address": "Place de la Gare",
+        "city_area": "Station District",
+        "latitude": 48.8500,
+        "longitude": 2.3600
+    }
+]
