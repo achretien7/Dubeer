@@ -44,5 +44,5 @@ const options: DataSourceOptions = hasDatabaseUrl
     };
 
 
-export const AppDataSource = new DataSource(options);
-export default AppDataSource;
+const dataSource = new DataSource(options);
+export default dataSource;
