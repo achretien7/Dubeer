@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "typeorm": "typeorm-ts-node-commonjs",
     "migration:generate": "npm run typeorm -- -d ./src/database/data-source.ts migration:generate ./src/migrations/Init",
+    "migrate:prod": "node ./node_modules/typeorm/cli.js migration:run -d dist/database/data-source.js",
     "migration:run": "npm run typeorm -- -d ./src/database/data-source.ts migration:run",
     "seed:venues": "ts-node -r tsconfig-paths/register src/scripts/seed-venues.ts"
   },
